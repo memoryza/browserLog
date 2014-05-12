@@ -3,16 +3,20 @@
  * author:memoryza
 **/
 (function() {
-    window.onerror = function(msg, url, line) {
+    window.onerror = function(msg, errfile, line) {
         var xhr = createXHR();
         if(xhr) {
+            errfile = errfile ? errfile : '';
+            line = line ? line : '';
+            if(!errfile || !line) return false;
             xhr.onreadystatechange= function (){}
             var info = navigator.userAgent,
                  msg = msg.replace(/!|\*|\(|\)|\'|~/g, ''),
-                 md5code = md5(encodeURIComponent(msg) + url + line+info);
+                 url = location.href,
+                 md5code = md5(encodeURIComponent(msg) + errfile + line+info);
             xhr.open('POST','/clientError/ReceiveError.html',true);
             xhr.setRequestHeader('CONTENT-TYPE','application/x-www-form-urlencoded');
-            xhr.send("message=" + msg +"&url=" + url+ "&line="+ line + "&info=" + info+ "&code=" + md5code );
+            xhr.send("message=" + msg +"&errfile=" + errfile+ "&line="+ line + "&info=" + info+ "&code=" + md5code + "&url=" + url );
         }
     }
     function createXHR() {
